@@ -1,1 +1,67 @@
-hello world
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>github page</title>
+<style type="text/css">
+<!--
+  div.hbase{
+    background: rgba(0, 0, 0, 0.5);
+    width: 400;
+    position: absolute;
+    left: 40%;
+    padding-left:30px;
+    padding-right:20px;
+    padding-bottom:40px;
+  }
+  div.main{
+    position: fixed;
+    width: 400;
+    padding-top: 30px;
+  }
+-->
+</style>
+</head>
+<body>
+  <div class="main">
+    <img alt="头像" src="images/suolong.jpeg">
+  </div>
+  <div class="hbase">
+    <h1><p align="center">HBase Configuration</p></h1>
+    <h2>首先在安装Hbase之前必须具备以下先决条件：</h2>
+    1. 安装Java1.6或者以上版本<br>
+    2. Hadoop（如果Hbase只在单机模式运行的话这个条件可以省略）<br>
+    3. SSH<br>
+    <h2>Hbase的安装和配置：</h2>
+    <h3>1. 单机模式安装</h3>
+    Hbase安装文件默认情况下是支持单机模式的，也就是说将Hbase文件解压之后就可以直接运行。<br>
+    ps:在运行之前，建议读者先修改HBase的配置文件，配置文件为${HBASE_HOME}/conf/hbase-site.xml<br>
+    需要修改的内容如下：<br>
+    &ltconfiguration&gt<br>
+    &nbsp&nbsp&ltproperty&gt<br>
+    &nbsp&nbsp&nbsp&nbsp&ltname&gthbase.rootdir&lt/name&gt<br>
+    &nbsp&nbsp&nbsp&nbsp&ltvalue&gtfile:///tmp/hbase-${user.name}/hbase&lt/value&gt<br>
+    &nbsp&nbsp&lt/property&gt<br>
+    &lt/configuration&gt<br>
+    hbase.rootdir路径也就是你hbase数据库的存放地址<br>
+    注：笔者直接在文本编辑器修改完上述内容之后运行HBase单机模式，系统会提示错误说配置文档的<property>标签没有正确的结束，
+    在网上查了一下说是因为编码的问题，建议把xml文档复制到eclipse等IDE进行编辑，然后再复制替代原来的配置文件即可。<br>
+    按照上述的步骤配置完成后，根据很多资料的描述说已经可以正常运行了，但是当笔者在自己的笔记本上面运行hbase shell脚本的时候，
+    还是会发生错误，解决的步骤是要修改一下文档/etc/hosts，用一款文本编辑器打开/etc/hosts文件，把其中的<br>
+    127.0.0.1 localhost<br>
+    127.0.1.1 ${你的主机名}<br>
+    修改为：<br>
+    ***.***.***.*** localhost<br>
+    ***.***.***.*** ${你的主机名}<br>
+    其中***.***.***.***表示你的IP地址<br>
+    这样就可以在单机模式下顺利的运行你的HBase了<br>
+  </div>
+</body>
+</html>
+
+
+
+
+
+
+
