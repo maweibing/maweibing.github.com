@@ -7,7 +7,8 @@
 <!--
   div.hbase{
     background: rgba(0, 0, 0, 0.5);
-    width: 400;
+    width: 600px;
+    overflow : hidden;
     position: absolute;
     left: 40%;
     padding-left:30px;
@@ -16,8 +17,8 @@
   }
   div.main{
     position: fixed;
-    width: 400;
     padding-top: 30px;
+    padding-left: 77px;
   }
 -->
 </style>
@@ -33,6 +34,7 @@
     2. Hadoop（如果Hbase只在单机模式运行的话这个条件可以省略）<br>
     3. SSH<br>
     <h2>Hbase的安装和配置：</h2>
+    
     <h3>1. 单机模式安装</h3>
     Hbase安装文件默认情况下是支持单机模式的，也就是说将Hbase文件解压之后就可以直接运行。<br>
     ps:在运行之前，建议读者先修改HBase的配置文件，配置文件为${HBASE_HOME}/conf/hbase-site.xml<br>
@@ -44,8 +46,10 @@
     &nbsp&nbsp&lt/property&gt<br>
     &lt/configuration&gt<br>
     hbase.rootdir路径也就是你hbase数据库的存放地址<br>
-    注：笔者直接在文本编辑器修改完上述内容之后运行HBase单机模式，系统会提示错误说配置文档的<property>标签没有正确的结束，
-    在网上查了一下说是因为编码的问题，建议把xml文档复制到eclipse等IDE进行编辑，然后再复制替代原来的配置文件即可。<br>
+    <i><font color="blue">注：笔者直接在文本编辑器修改完上述内容之后运行HBase单机模式，
+    系统会提示错误说配置文档的&ltproperty&gt标签没有正确的结束，
+    在网上查了一下说是因为编码的问题，建议把xml文档复制到eclipse等IDE进行编辑，然后再复制替代原来的配置文件即可。
+    </font></i><br><br>
     按照上述的步骤配置完成后，根据很多资料的描述说已经可以正常运行了，但是当笔者在自己的笔记本上面运行hbase shell脚本的时候，
     还是会发生错误，解决的步骤是要修改一下文档/etc/hosts，用一款文本编辑器打开/etc/hosts文件，把其中的<br>
     127.0.0.1 localhost<br>
@@ -55,6 +59,49 @@
     ***.***.***.*** ${你的主机名}<br>
     其中***.***.***.***表示你的IP地址<br>
     这样就可以在单机模式下顺利的运行你的HBase了<br>
+    
+    <h3>2. 伪分布式安装</h3>
+    伪分布模式是把所有程序运行在单个节点（单台机器）上的分布模式，此种模式下HBase所有的守护进程将运行在同一个节点之上。
+    由于分布式模式的运行需要依赖于分布式文件系统，所以HDFS已经成功运行，启动HDFS的步骤是在运行Hadoop中完成的。<br>
+    伪分布式的安装主要有以下四个步骤：<br>
+    <h4>a.配置hbase-site.xml文档</h4>
+    一切准备就绪后，就可以开始配置HBase的hbase-site.xml文档了，通过设定hbase.rootdir的参数来指定HBase数据库的存放位置，
+    进而让HBase运行与Hadoop之上，具体的配置如下：<br>
+    &ltconfiguration&gt<br>
+    &nbsp&nbsp&ltproperty&gt<br>
+    &nbsp&nbsp&nbsp&nbsp&ltname&gthbase.rootdir&lt/name&gt<br>
+    &nbsp&nbsp&nbsp&nbsp&ltvalue&gthdfs://localhost:9000/hbase&lt/value&gt<br>
+    &nbsp&nbsp&nbsp&nbsp&ltdescription&gt此参数指定了数据的存放位置&lt/description&gt<br>
+    &nbsp&nbsp&lt/property&gt<br><br>
+    &nbsp&nbsp&ltproperty&gt<br>
+    &nbsp&nbsp&nbsp&nbsp&ltname&gtdfs.replication&lt/name&gt<br>
+    &nbsp&nbsp&nbsp&nbsp&ltvalue&gt1&lt/value&gt<br>
+    &nbsp&nbsp&nbsp&nbsp&ltdescription&gt此参数制定了Hlog和Hfile的副本个数，此参数的设置不能大于HDFS的节点数，
+    伪分布式下DataNode只有一台，因此此参数应设置为1<br>
+    &nbsp&nbsp&nbsp&nbsp&lt/description&gt<br>
+    &nbsp&nbsp&lt/property&gt<br>
+    &lt/configuration&gt<br>
+    <i><font color="blue">注：这里hdfs://localhost:9000为本机相对应的HDFS目录，是在Hadoop的配置之中指定的。
+    还有hbase.rootdir的文件夹最好不要自己创建，因为HBase在创建这个文件夹是会对其做一些初始化操作，
+    如果自己创建的话最后存储数据的时候可能会找不到一些配置文档。
+    </font></i>
+    
+    <h4>b.修改HBase库</h4>
+    HBase所有的库都存放在${HBASE_HOME}/lib文件夹下面，为了能让HBase对Hadoop提供更好的支持和让zookeeper能顺利监控机器的状态，
+    需要把${HBASE_HOME}/lib中的hadoop-core-*-append.*.jar替换为${HADOOP_HOME}/lib下的hadoop-core-*.jar和
+    commons-configuration-*.jar
+    
+    <h4>c.修改/etc/hosts文件</h4>
+    把/etc/hosts文件中的<br>
+    <font color="blue">127.0.1.1 ${主机名}</font><br>
+    替换为<br>
+    <font color="blue">127.0.0.1 ${主机名}</font><br>
+    
+    <h4>d.修改${HBASE_HOME}/conf/hbase.env.sh文件</h4>
+    取消export JAVA_HOME的注释，把路径设为本机Java的安装路径<br>
+    取消export HBASE_MANAGES_ZK=true的注释，让HBase自己管理zookeeper<br>
+    <br><br>至此，就可以在本机上运行伪分布式的HBase，运行HBase的命令为
+    ${HBASE_HOME}/bin/start-hbase.sh
   </div>
 </body>
 </html>
