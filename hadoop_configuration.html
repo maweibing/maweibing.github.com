@@ -1,0 +1,121 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Hadoop Configuration</title>
+<style type="text/css">
+<!--
+  div.hbase{
+    background: rgba(0, 0, 0, 0.5);
+    width: 600px;
+    overflow : hidden;
+    position: absolute;
+    left: 40%;
+    padding-left:30px;
+    padding-right:20px;
+    padding-bottom:40px;
+    padding-top: 10px;
+  }
+  div.main{
+    position: fixed;
+    padding-top: 30px;
+    padding-left: 77px;
+  }
+-->
+</style>
+</head>
+<body>
+  <div class="main">
+    <img alt="头像" src="images/suolong.jpeg">
+  </div>
+  <div class="hbase">
+    <a href="index.html">返回首页</a>
+    <h1><p align="center">Hadoop Configuration</p></h1>
+    <h2>一 在Linux安装Hadoop之前，需要先安装两个程序：</h2>
+    1. JDK1.6或者以上版本<br>
+    2. SSH（推荐安装OpenSSH）
+    <h3>安装JDK</h3>
+    安装JDK网上已经有很多很多的资料，所以这里也不想再赘述了，以后如果真的有需要再补上吧<br>
+    <h3>安装SSH（以Ubuntu12.04为例）</h3>
+    a.确认你已经连上互联网，然后输入命令：<br><br>
+    sudo apt-get install ssh<br><br>
+    b.配置为可以免密码登陆本机。首先查看在u用户下是否存在.ssh文件夹，输入命令：<br><br>
+    ls -a /home/u<br><br>
+    一般来说，安装SSH的时候会自动在当前用户目录创建这个隐藏目录，如果没有的话也可以手动创建<br>
+    接下来输入命令：<br><br>
+    ssh-keygen -t dsa -P '' -f ~/.ssh/id_dsa<br>
+    <font color="blue">
+    注：ssh-keygen代表生成密钥，-t指定生成密钥的类型，dsa是dsa密钥认证，-P用于提供密码，-f指生成密钥的文件。<br>
+    </font><br>
+    这个命令会在.ssh文件夹下创建id_dsa及id_dsa.pub两个文件，这是SSH的一对密钥和公钥，类似与钥匙和锁，
+    把id_dsa.pub（公钥）追加到授权的key中去，输入命令：<br><br>
+    cat ~/.ssh/id_dsa.pub >> ~/.ssh/authorized_keys<br><br>
+    这条命令的功能是把公钥加到用于认证的公钥文件中，至此免密码登陆本机已配置完毕。<br><br>
+    c.验证SSH是否已安装成功，以及是否可以免密码登陆本机<br>
+    输入命令：<br><br>
+    ssh -version<br><br>
+    结果如果现实SSH的版本信息，则表示已经安装成功了<br>
+    输入命令：<br><br>
+    ssh localhost<br><br>
+    就可以直接免密码登陆本机了，第一次登陆的时候系统会询问是否继续链接，直接输入yes就可以进入了<br>
+    
+    <h2>二 安装并运行Hadoop</h2>
+    关于Hadoop对各个节点的角色定义，在这里就不赘述了，读者可以查看相关的资料<br>
+    下载Hadoop的安装包并将其解压<br>
+    <h3>1. 单机模式配置方式</h3>
+    安装单机模式的Hadoop无须配置，在这种方式下，Hadoop被认为是一个单独的Java进程，这种方式经常用来调试。<br>
+    <h3>2. 伪分布式Hadoop配置</h3>
+    可以把伪分布式的Hadoop看作只有一个节点的集群，在这个集群中，这个节点既是Master，也是Slave；
+    既是NameNode，也是DataNode；既是JobTracker，也是TaskTracker。<br>
+    伪分布式的配置过程也很简单，只需要修改几个文件。<br>
+    进入conf文件夹，修改配置文件。<br>
+    指定JDK的安装位置：<br><br>
+    hadoop-env.sh:<br>
+    export JAVA_HOME=/usr/lib/jvm/jdk<br>
+    <font color="blue">注：这里的路径只是一个例子，读者的路径可能与它不完全相同<br><br></font>
+    接下来是配置Hadoop核心的配置文件，这里配置的是HDFS的地址及端口号。<br><br>
+    conf/core-site.xml<br>
+    &ltconfiguration&gt<br>
+    &nbsp&nbsp&ltproperty&gt<br>
+    &nbsp&nbsp&nbsp&nbsp&ltname&gtfs.default.name&lt/name&gt<br>
+    &nbsp&nbsp&nbsp&nbsp&ltvalue&gthdfs://localhost:9000&lt/value&gt<br>
+    &nbsp&nbsp&lt/property&gt<br>
+    &lt/configuration&gt<br><br>
+    
+    以下是Hadoop中HDFS的配置，配置的备份方式默认是3，在单机版的Hadoop中，需要将其改为1<br><br>
+    &ltconfiguration&gt<br>
+    &nbsp&nbsp&ltproperty&gt<br>
+    &nbsp&nbsp&nbsp&nbsp&ltname&gtdfs.replication&lt/name&gt<br>
+    &nbsp&nbsp&nbsp&nbsp&ltvalue&gt1&lt/value&gt<br>
+    &nbsp&nbsp&lt/property&gt<br>
+    &lt/configuration&gt<br><br>
+    
+    以下是Hadoop中MapReduce的配置文件，配置JobTracker的地址及端口<br><br>
+    conf/mapred-site.xml<br>
+    &ltconfiguration&gt<br>
+    &nbsp&nbsp&ltproperty&gt<br>
+    &nbsp&nbsp&nbsp&nbsp&ltname&gtmapred.job.tracker&lt/name&gt<br>
+    &nbsp&nbsp&nbsp&nbsp&ltvalue&gtlocalhost:9001&lt/value&gt<br>
+    &nbsp&nbsp&lt/property&gt<br>
+    &lt/configuration&gt<br><br>
+    
+    接下来，在启动Hadoop前，需要格式化Hadoop的文件系统HDFS，进入Hadoop的文件夹，输入命令：<br><br>
+    bin/Hadoop NameNode -format<br><br>
+    格式化文件系统，接下来启动Hadoop<br>
+    输入命令，启动所有进程：<br><br>
+    bin/start-all.sh<br>
+    <font color="blue">注：启动系统后，可能会有一个warning，提示HADOOP_HOME is depress，解决这个warning的方法是
+    修改${HADOOP_HOME}/conf/hadoop-env.sh文件，增加一句：export HADOOP_HOME_WARN_SUPPRESS=TRUE，这样就可以了。</font><br><br>
+    最后，验证Hadoop是否安装成功。<br>
+    打开浏览器，分别输入网址：<br>
+    http://localhost:50030(MapReduce的Web页面)<br>
+    http://localhost:50070(HDFS的Web页面)<br>
+    如果都能查看，说明Hadoop已经安装成功。<br>
+    对于Hadoop来说，启动所有进程是必须的，但是如果有必要，你依然可以只启动HDFS(start-dfs.sh)或MapReduce(start-mapred.sh)<br>
+  </div>
+</body>
+</html>
+
+
+
+
