@@ -1,0 +1,56 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Heritrix Configuration</title>
+<style type="text/css">
+<!--
+  div.heritrix{
+    background: rgba(0, 0, 0, 0.5);
+    width: 600px;
+    overflow : hidden;
+    position: absolute;
+    left: 40%;
+    padding-left:30px;
+    padding-right:20px;
+    padding-bottom:40px;
+    padding-top: 10px;
+  }
+  div.main{
+    position: fixed;
+    padding-top: 30px;
+    padding-left: 77px;
+  }
+-->
+</style>
+</head>
+<body>
+  <div class="main">
+    <img alt="头像" src="images/suolong.jpeg">
+  </div>
+  <div class="heritrix">
+    <a href="index.html">返回首页</a>
+    <h1><p align="center">Heritrix Configuration</p></h1>
+    <h2>命令行运行Heritrix</h2>
+    如果是在命令行运行Heritrix的话，那下载Heritrix的安装包后不必进行任何配置，直接运行就可以了，运行Heritrix的命令为：<br><br>
+    ${HERITRIX_HOME}/bin/heritrix -a admin:admin<br>
+    <font color="blue">注：这里admin:admin表示Heritrix的帐号：密码，帐号和密码可以在配置文档中修改，运行完命令后，
+    就可以在浏览器输入：https://localhost:8443进入Heritrix的Web UI页面，然后就可以进行爬虫的抓取了</font><br>
+    <h2>在eclipse中配置heritrix</h2>
+    要想在eclipse中成功配置heritrix的话，除了下载heritrix的安装包，还要下载源代码包，下载后在eclipse中配置步骤如下：
+    <h3>1.导入项目</h3>
+    因为Heritirx的源代码包解压后就是一个eclipse项目，所以在eclipse中直接导入就可以了，导入的步骤为：<br>
+    在project空白出右键选择Import，选择General/Existing Project into Workspace，然后在路径中选择heritrix源代码的文件夹就可以了
+    <h3>2.导入类库</h3>
+    导入源代码后，需要再导入Heritrix的类库，导入类库的方法为：<br>
+    在Heritrix项目右键选择Build Path，Configure Build Path,进入页面后选择Libraries,add jars，
+    然后把Heritrix项目下所有的Jar包都添加进去就可以了<br><br>
+    这样，就成功的完成了在eclipse中对heritri项目的配置，搭建了Heritrix的开发环境
+  </div>
+</body>
+</html>
+
+
+
+
+
